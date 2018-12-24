@@ -1,0 +1,28 @@
+#!/bin/bash
+#CHANGE ME
+user=USERNAME
+code=tumblr2-grab
+
+homeDir=/home/$user
+logFile=$homeDir/startup.log
+sleep 5
+if [ ! -e $homeDir/$code ]; then
+  echo "$(date) Started startup script for $code" >> $logFile 2>&1
+  sudo yum -y update >> $logFile 2>&1
+  sudo yum -y install autoconf automake flex gnutls-devel lua-devel python-pip zlib-devel bzip2 git gcc >> $logFile 2>&1
+  sudo pip install --upgrade pip >> $logFile 2>&1
+  sudo pip install --upgrade seesaw >> $logFile 2>&1
+  cd $homeDir >> $logFile 2>&1
+  git clone https://github.com/ArchiveTeam/$code.git >> $logFile 2>&1
+  cd $code >> $logFile 2>&1
+  ./get-wget-lua.sh >> $logFile 2>&1
+  sudo chown -R $user:$user $homeDir/$code >> $logFile 2>&1
+  echo "$(date) Finished startup script for $code" >> $logFile 2>&1
+else
+  echo "$(date) Started startup script for $code (update)" >> $logFile 2>&1
+  sudo yum -y update >> $logFile 2>&1
+  cd $homeDir/$code >> $logFile 2>&1
+  git pull https://github.com/ArchiveTeam/$code.git >> $logFile 2>&1
+  sudo chown -R $user:$user $homeDir/$code >> $logFile 2>&1
+  echo "$(date) Finished startup script for $code (update)" >> $logFile 2>&1
+fi
